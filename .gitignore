@@ -130,3 +130,5 @@ dmypy.json
 
 #my changes
 .csv
+.xls
+.xlsx
