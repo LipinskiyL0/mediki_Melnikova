@@ -129,6 +129,6 @@ dmypy.json
 .pyre/
 
 #my changes
-.csv
-.xls
-.xlsx
+*.csv
+*.xls
+*.xlsx
