@@ -41,3 +41,31 @@ for model in models:
     Rez.append(rez)
 Rez=pd.DataFrame(Rez, columns=["method", "stat", "p","interpret" ])
 Rez.to_csv(name_files[:-4]+"_ManaWhitneyu.csv")
+
+#проверка статистической значимсти результатов между моделями Model to Model
+Rez=[]
+for model1 in models:
+    rez=[]
+    for model2 in models:
+        if model1==model2:
+            rez.append(1)
+            continue            
+        try:
+            
+            df1=df[df["method"]==model1]
+            data1=df1["er_test"].values
+            df1=df[df["method"]==model2]
+            data2=df1["er_test"].values
+            
+        
+            stat, p = mannwhitneyu(data1, data2)
+            rez.append(p)
+            
+        except:   
+            rez.append(-1)
+    Rez.append(rez)
+Rez=pd.DataFrame(Rez, columns=models, index=models)
+Rez=Rez.round(2)
+Rez.to_csv(name_files[:-4]+"_MtoM_ManaWhitneyu.csv")
+        
+    
