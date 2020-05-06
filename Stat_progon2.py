@@ -8,8 +8,18 @@ Created on Fri Apr 17 18:49:26 2020
 #import pandas as pd
 #ind=0
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import os.path
+
+if not os.path.exists("graphs"):
+    os.makedirs("graphs") 
+    
+    
 Stat=[]
-for m in ["LR", "SVC"]:
+df_fi=[]
+models= ["LR", "SVC", "KNC", "DTC"]
+for m in models:
     method=m
     for i in range(3):
         exec(open("forGaClassModel_V3.py").read())
@@ -52,3 +62,64 @@ rez2=pd.DataFrame({"cros_mean":c, "cros_std":c1,
                    })
 rez2=rez2.round(2)
 rez2.to_csv("rez_model_test_stat.csv")
+
+#Соединяем таблицу с признаками
+df=df_fi[0]
+df.columns=["method", "features", "important0"]
+progon=0
+df_end=[]
+for i in range(1, len(df_fi)):
+    if df_fi[i-1]["method"][0]==df_fi[i]["method"][0]:
+        progon+=1
+        df_fi[i].columns=["method", "features", "important"+str(progon)]
+        df = pd.merge(df, df_fi[i], how='outer')
+
+    else:
+        df_end.append(df)
+        progon=0
+        df=df_fi[i]
+        df.columns=["method", "features", "important0"]
+
+df_end.append(df)
+df_rez=pd.concat(df_end, axis=0)
+df_rez=df_rez.fillna(0)
+mas=df_rez.iloc[:, 2:]
+ind=np.sum(mas, axis=1)>0
+df_rez=df_rez[ind]
+mas=df_rez.iloc[:, 2:]
+m=np.mean(mas, axis=1)
+df_rez["mean"]=m
+df_rez=df_rez.round(4)
+df_rez.to_csv("rez_model_feature_important.csv", index=False)
+
+plt.close("all")
+for mod in models:
+    x=df_rez[df_rez["method"]==mod]["features"]
+    y=df_rez[df_rez["method"]==mod]["mean"]
+    
+    fig=plt.figure()
+    
+    ax=plt.axes([0.4, 0.05, 0.55, 0.90])
+    ax.barh(x, y)
+    
+    #  Устанавливаем позиции тиков:
+    ax.set_yticks(x)
+    
+    #  Устанавливаем подписи тиков
+    labels = ax.set_yticklabels(x,
+                       fontsize = 12,    #  Размер шрифта
+                       color = 'k',    #  Цвет текста
+                       rotation = 0,    #  Поворот текста
+                       verticalalignment =  'center')    #  Вертикальное выравнивание
+    
+    fig.set_figwidth(10)
+    fig.set_figheight(6)
+    plt.title("модель "+str('"')+mod+str('"'))        
+    plt.savefig("graphs\\"+mod+"_trand.png")
+    plt.close("all")
+    
+    
+
+
+
+

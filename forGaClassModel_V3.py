@@ -29,7 +29,10 @@ from GaClassModel_V1 import GaClassGenotip
 from ModelEnd2 import model
 import matplotlib.pyplot as plt 
 from sklearn.model_selection import train_test_split
+from sklearn.inspection import permutation_importance
+
 plt.close("all")
+#df_fi=[]
 #method="SVC"
 df=pd.read_csv("enter1.csv")
 
@@ -57,6 +60,18 @@ out_model=model(X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test,
                 method=method)
 y_pred_test=out_model["y_mod_test"]
 y_pred_train=out_model["y_mod_train"]
+
+#оценка значимости признаков
+results = permutation_importance(out_model["model"], X_train, y_train,
+                                 scoring='f1_macro', n_repeats=10)
+
+
+df_fi1=pd.DataFrame( results.importances_mean, columns=["important"])
+df_fi1["features"]=list(X_train.columns)
+
+df_fi1["method"]=method
+df_fi1=df_fi1[["method", "features", "important"]]
+df_fi.append(df_fi1)
 
 #print("точность по тестовой выборке=", out_model["f1_test"]) 
 #print("точность по обучающей выборке=", out_model["f1_train"]) 
