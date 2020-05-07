@@ -8,7 +8,7 @@ from numpy.random import randn
 from scipy.stats import mannwhitneyu
 import pandas as pd
 import numpy as np
-name_files="FR_rez_model_test.csv"
+name_files="7_other_rez_model_test.csv"
 df=pd.read_csv(name_files)
 
 df=df.dropna()
