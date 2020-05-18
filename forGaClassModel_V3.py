@@ -32,6 +32,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.inspection import permutation_importance
 
 plt.close("all")
+#Stat=[]
 #df_fi=[]
 #method="SVC"
 df=pd.read_csv("enter1.csv")
